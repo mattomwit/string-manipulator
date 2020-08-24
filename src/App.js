@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import ListGroup from './ListGroup';
 import MainSection from './MainSection';
 import ToLower from './Actions/ToLowercase';
@@ -13,7 +13,6 @@ class App extends React.Component{
       sectionToRender: "Main",
       outputValue:"Output Value"
     };
-    this.textAreaRef = useRef(null);
 
     this.availableActions = {
       ToLower: {
