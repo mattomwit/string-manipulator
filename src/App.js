@@ -1,7 +1,6 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import ListGroup from './ListGroup';
 import MainSection from './MainSection';
-import ActionSection from './ActionsSection';
 import ToLower from './Actions/ToLowercase';
 import ToUpper from './Actions/ToUppercase';
 import Replace from './Actions/Replace';
@@ -11,9 +10,10 @@ class App extends React.Component{
   constructor(props) {
     super(props);
     this.state = { 
-      sectionToRender: "Main"
-        
+      sectionToRender: "Main",
+      outputValue:"Output Value"
     };
+    this.textAreaRef = useRef(null);
 
     this.availableActions = {
       ToLower: {
@@ -37,8 +37,18 @@ class App extends React.Component{
     };
 
     this.currentActionList = {};
-    this.outputValue="Output Value";
-    this.mainSection = <MainSection outputValue={this.outputValue}/>
+    this.mainSection = <MainSection 
+                          outputValue={this.state.outputValue}
+                          onInputTextChange={(e)=>this.onInputTextChange(e)}
+                        />;
+
+    this.onInputTextChange = this.onInputTextChange.bind(this);
+  }
+
+  onInputTextChange(event){
+    let stringToModify = event.target.value;
+    let newString = stringToModify;
+    this.setState({outputValue : newString});
   }
 
   addActionToCurrentActionList(actionObject){
@@ -87,6 +97,8 @@ class App extends React.Component{
         <div className="col-12 col-md-6 mb-3 border rounded bg-white">
           {this.renderSection(this.state.sectionToRender)}
           {this.renderReturnBtn(this.state.sectionToRender)}
+          <p>state</p>
+          <p id="itemID">{JSON.stringify(this.state)}</p>
           <button type="button" className="btn btn-info mb-3" onClick={()=>console.log("save action List!")}>
              Save action list
           </button>

@@ -5,7 +5,7 @@ function TextArea(props){
     return(
         <div className="form-group">
             <label htmlFor={displayName}>{props.name}</label>
-    <textarea className="form-control" id={displayName} onChange={()=>{if(props.onChange !== undefined)props.onChange()}} rows="5">{props.value}</textarea>
+            <textarea className="form-control" id={displayName} value={props.value} onChange={(event)=>{if(props.onChange !== undefined)props.onChange(event)}} rows="5"/>
         </div>
     );
 }
