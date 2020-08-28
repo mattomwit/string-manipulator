@@ -11,6 +11,7 @@ class App extends React.Component{
     super(props);
     this.state = { 
       sectionToRender: "Main",
+      inputValue: "",
       outputValue:"Output Value"
     };
 
@@ -36,18 +37,16 @@ class App extends React.Component{
     };
 
     this.currentActionList = {};
-    this.mainSection = <MainSection 
-                          outputValue={this.state.outputValue}
-                          onInputTextChange={(e)=>this.onInputTextChange(e)}
-                        />;
-
     this.onInputTextChange = this.onInputTextChange.bind(this);
   }
 
   onInputTextChange(event){
     let stringToModify = event.target.value;
     let newString = stringToModify;
-    this.setState({outputValue : newString});
+    this.setState({
+        inputValue : stringToModify,
+        outputValue : newString
+    });
   }
 
   addActionToCurrentActionList(actionObject){
@@ -63,16 +62,6 @@ class App extends React.Component{
     });
   }
 
-  renderSection(sectionToRender){
-    if(sectionToRender === "Main"){
-      return this.mainSection;
-    }else if(sectionToRender === undefined || this.availableActions[sectionToRender].component === undefined){
-      return this.mainSection;
-    }else{
-      return this.availableActions[sectionToRender].component;
-    }
-  }
-
   renderReturnBtn(sectionToRender){
     if(sectionToRender !== undefined && sectionToRender !== "Main")
     return (
@@ -83,6 +72,18 @@ class App extends React.Component{
   }
 
   render(){
+    let renderComponent = {};
+    if(this.state.sectionToRender === "Main" ||(this.state.sectionToRender === undefined || this.availableActions[this.state.sectionToRender].component === undefined)){
+      renderComponent = <MainSection 
+        parentState={this.state}
+        outputValue={this.state.outputValue}
+        inputValue={this.state.inputValue}
+        onInputTextChange={(e)=>this.onInputTextChange(e)}
+      />;
+    }else{
+      renderComponent = this.availableActions[this.state.sectionToRender].component;
+    }
+
     return (
       <div className="App my-3 row">
         <div className="col-12 col-md-3 mb-3">
@@ -94,7 +95,7 @@ class App extends React.Component{
         </div>
   
         <div className="col-12 col-md-6 mb-3 border rounded bg-white">
-          {this.renderSection(this.state.sectionToRender)}
+          {renderComponent}
           {this.renderReturnBtn(this.state.sectionToRender)}
           <p>state</p>
           <p id="itemID">{JSON.stringify(this.state)}</p>

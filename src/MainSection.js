@@ -6,7 +6,7 @@ function MainSection(props){
     <div>
         <h1>String Manipulation</h1>
 
-        <TextArea name="Input text" onChange={(e)=>props.onInputTextChange(e)}/>
+        <TextArea name="Input text" value={props.inputValue} onChange={(e)=>props.onInputTextChange(e)}/>
         <TextArea name="Output text" value={props.outputValue} />
     </div>
     );
