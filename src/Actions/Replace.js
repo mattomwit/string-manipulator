@@ -5,11 +5,19 @@ class Replace extends React.Component{
         super(props);
         this.state = {
             valueToReplace : "",
-            replaceWith : ""
+            replaceWith : "",
+            caseSensitive: false
         };
 
         this.onVelueToReplaceChanged = this.onVelueToReplaceChanged.bind(this);
         this.onReplaceWithChanged = this.onReplaceWithChanged.bind(this);
+        this.onCaseSensitiveChanged = this.onCaseSensitiveChanged.bind(this);
+    }
+
+    onCaseSensitiveChanged(event){
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        this.setState({caseSensitive : value});
     }
     
     onVelueToReplaceChanged(event){
@@ -21,11 +29,13 @@ class Replace extends React.Component{
     }
 
     generateCurrentStateObjectToSave(){
+        let nameStart = this.state.caseSensitive?"Case sensitive replace ":"Replace";
         return {
-            name:'Replace "' + this.state.valueToReplace + '" with "' + this.state.replaceWith + '"',
+            name: nameStart + ' "' + this.state.valueToReplace + '" with "' + this.state.replaceWith + '"',
             code:"Replace",
             valueToReplace : this.state.valueToReplace,
-            replaceWith : this.state.replaceWith
+            replaceWith : this.state.replaceWith,
+            caseSensitive : this.state.caseSensitive
         };
     }
 
@@ -50,6 +60,10 @@ class Replace extends React.Component{
                         value={this.state.replaceWith}  
                         onChange={this.onReplaceWithChanged}
                     />
+                </div>
+                <div className="form-check mb-3">
+                    <input type="checkbox" className="form-check-input" id="case-sensitive" value={this.state.caseSensitive} onChange={this.onCaseSensitiveChanged}/>
+                    <label className="form-check-label" htmlFor="case-sensitive">Case sensitive</label>
                 </div>
                  <button type="button" className="btn btn-success mr-3" onClick={()=>this.props.addToCurrentList(this.generateCurrentStateObjectToSave())}>
                   Add action

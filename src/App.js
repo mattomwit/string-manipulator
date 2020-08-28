@@ -44,7 +44,7 @@ class App extends React.Component{
       Replace:{
         name: "Replace",
         component: <Replace addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
-        action: (strValue, curentActionObj, ignore = "true")=>{return strValue.replace(new RegExp(curentActionObj.valueToReplace.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(curentActionObj.replaceWith)=="string")?curentActionObj.replaceWith.replace(/\$/g,"$$$$"):curentActionObj.replaceWith)},
+        action: (strValue, curentActionObj)=>{return strValue.replace(new RegExp(curentActionObj.valueToReplace.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(!curentActionObj.caseSensitive?"gi":"g")),(typeof(curentActionObj.replaceWith)=="string")?curentActionObj.replaceWith.replace(/\$/g,"$$$$"):curentActionObj.replaceWith)},
         code: "Replace"
       }
       
@@ -68,8 +68,9 @@ class App extends React.Component{
   }
 
   addActionToCurrentActionList(actionObject){
+    let numberOfActions = Object.keys(this.state.currentActionList).length;
     let newCurrentActionList = Object.assign({}, this.state.currentActionList);
-    newCurrentActionList[actionObject.code] = actionObject;
+    newCurrentActionList[actionObject.code+numberOfActions] = actionObject;
     this.setState({
       sectionToRender: "Main",
       currentActionList: newCurrentActionList
@@ -142,7 +143,6 @@ class App extends React.Component{
       </div>
     );
   }
-  
 }
 
 export default App;

@@ -8,7 +8,7 @@ function ListGroup(props){
         let itemCode = item.code;
         listItems.push(
         <ListGroupItem 
-            key={itemCode} 
+            key={key} 
             name={item.name} 
             onClick={()=>{
                 console.log("ListGroup item name:" + itemCode);
