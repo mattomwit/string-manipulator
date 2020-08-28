@@ -13,7 +13,9 @@ class App extends React.Component{
       sectionToRender: "Main",
       inputValue: "",
       outputValue:"Output Value",
-      currentActionList: {}
+      currentActionList: {},
+      savedActionLists: {},
+      currentActiveActionList: ""
     };
 
     this.availableActions = {
@@ -49,10 +51,58 @@ class App extends React.Component{
       }
       
     };
+
+    this.onCurrentActiveActionListChanged = this.onCurrentActiveActionListChanged.bind(this);
+
+    
+  }
+
+  componentDidMount() {
+    this.loadSavedActionLists();
   }
 
   onInputTextChange(event){
     this.updateOutputString(event.target.value);
+  }
+
+  onCurrentActiveActionListChanged(event){
+    this.setState({
+      currentActiveActionList : event.target.value
+    });
+  }
+
+  saveCurrentActionList(){
+    if(this.state.currentActiveActionList.length > 0 && Object.keys(this.state.currentActionList).length > 0){
+      let newSavedActionList = Object.assign({}, this.state.savedActionLists);
+      newSavedActionList[this.state.currentActiveActionList] ={
+        currentActionList: this.state.currentActionList,
+        name: this.state.currentActiveActionList,
+        code: this.state.currentActiveActionList
+      };
+      let strigify = JSON.stringify(newSavedActionList);
+      console.log("stringify", strigify);
+      localStorage.setItem("stringManipulatorSavedActionLists", strigify);
+      this.setState({ 
+        savedActionLists : newSavedActionList
+      });
+    }
+  }
+
+  loadSavedActionLists(){
+    let loaded = localStorage.getItem("stringManipulatorSavedActionLists");
+    console.log("loaded", loaded);
+    console.log("parsed", JSON.parse(loaded));
+    this.setState({ 
+      savedActionLists : JSON.parse(localStorage.getItem("stringManipulatorSavedActionLists"))
+    });
+  }
+
+  loadActionList(actionListName){
+     
+    this.setState({
+      currentActionList : Object.assign({}, this.state.savedActionLists[actionListName].currentActionList),
+      currentActiveActionList : actionListName
+    });
   }
 
   updateOutputString(inputValue){
@@ -121,7 +171,17 @@ class App extends React.Component{
           {this.renderReturnBtn(this.state.sectionToRender)}
           <p>state</p>
           <p id="itemID">{JSON.stringify(this.state)}</p>
-          <button type="button" className="btn btn-info mb-3" onClick={()=>console.log("save action List!")}>
+          
+          <div className="form-group">
+            <label htmlFor="current-action-list">Current action list</label>
+            <input
+                className="form-control" 
+                id="current-action-list"
+                value={this.state.currentActiveActionList}  
+                onChange={this.onCurrentActiveActionListChanged}
+            />  
+          </div>
+          <button type="button" className="btn btn-info mb-3" onClick={()=>this.saveCurrentActionList()}>
              Save action list
           </button>
         </div>
@@ -130,8 +190,8 @@ class App extends React.Component{
             <ListGroup 
               additionalClasses="mb-3" 
               name="Saved Action Lists"
-              onClick={(sectionName)=>this.setSectionToRender(sectionName)}
-              listItems={this.availableActions}
+              onClick={(actionListName)=>this.loadActionList(actionListName)}
+              listItems={this.state.savedActionLists}
             />
          
             <ListGroup 

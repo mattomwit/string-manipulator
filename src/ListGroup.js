@@ -11,8 +11,8 @@ function ListGroup(props){
             key={key} 
             name={item.name} 
             onClick={()=>{
-                console.log("ListGroup item name:" + itemCode);
                 if(props.onClick){
+                    console.log("ListGroup item name:" + item.name);
                     props.onClick(itemCode);
                 }
             }} 
