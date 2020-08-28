@@ -1,9 +1,9 @@
 import React from 'react';
 import ListGroup from './ListGroup';
 import MainSection from './MainSection';
-import ToLower from './Actions/ToLowercase';
-import ToUpper from './Actions/ToUppercase';
+import InputAction from './Actions/InputAction';
 import Replace from './Actions/Replace';
+import GenericAction from './Actions/GenericAction';
 
 
 class App extends React.Component{
@@ -17,38 +17,52 @@ class App extends React.Component{
     };
 
     this.availableActions = {
+      Prepend: {
+        name: "Prepend",
+        component: <InputAction name="Prepend" code="Prepend" addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
+        action: (strValue, curentActionObj)=>{return curentActionObj.value + strValue},
+        code: "Prepend"
+      },
+      Append: {
+        name: "Append",
+        component: <InputAction name="Append" code="Append" addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
+        action: (strValue, curentActionObj)=>{return strValue + curentActionObj.value},
+        code: "Append"
+      },
       ToLower: {
           name: "To Lowercase",
-          component: <ToLower addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
+          component: <GenericAction name="To Lowercase" code="ToLower" addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
           action: (strValue)=>{return strValue.toLowerCase()},
           code: "ToLower"
+      },
+      ToUpper:  {
+        name: "To Uppercase",
+        component: <GenericAction name="To Uppercase" code="ToUpper" addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
+        action: (strValue)=>{return strValue.toUpperCase()},
+        code: "ToUpper"
       },
       Replace:{
         name: "Replace",
         component: <Replace addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
-        action: (strValue, curentActionObj,ignore = "true")=>{return strValue.replace(new RegExp(curentActionObj.valueToReplace.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(curentActionObj.replaceWith)=="string")?curentActionObj.replaceWith.replace(/\$/g,"$$$$"):curentActionObj.replaceWith)},
+        action: (strValue, curentActionObj, ignore = "true")=>{return strValue.replace(new RegExp(curentActionObj.valueToReplace.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(curentActionObj.replaceWith)=="string")?curentActionObj.replaceWith.replace(/\$/g,"$$$$"):curentActionObj.replaceWith)},
         code: "Replace"
-      },
-      ToUpper:  {
-        name: "To Uppercase",
-        component: <ToUpper addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
-        action: (strValue)=>{return strValue.toUpperCase()},
-        code: "ToUpper"
       }
+      
     };
-
-    this.onInputTextChange = this.onInputTextChange.bind(this);
   }
 
   onInputTextChange(event){
-    let stringToModify = event.target.value;
-    let newString = stringToModify;
+    this.updateOutputString(event.target.value);
+  }
+
+  updateOutputString(inputValue){
+    let newString = inputValue;
     for(let key in this.state.currentActionList) {
       let curentActionObj = this.state.currentActionList[key];
       newString = this.availableActions[curentActionObj.code].action(newString, curentActionObj);
     }
     this.setState({
-        inputValue : stringToModify,
+        inputValue : inputValue,
         outputValue : newString
     });
   }
@@ -59,7 +73,8 @@ class App extends React.Component{
     this.setState({
       sectionToRender: "Main",
       currentActionList: newCurrentActionList
-    });
+    },
+    ()=>this.updateOutputString(this.state.inputValue));
   }
 
   setSectionToRender(sectionName){
