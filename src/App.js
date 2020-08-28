@@ -12,7 +12,8 @@ class App extends React.Component{
     this.state = { 
       sectionToRender: "Main",
       inputValue: "",
-      outputValue:"Output Value"
+      outputValue:"Output Value",
+      currentActionList: {}
     };
 
     this.availableActions = {
@@ -25,7 +26,7 @@ class App extends React.Component{
       Replace:{
         name: "Replace",
         component: <Replace addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
-        action: (strValue, valueToReplace, valueToReplaceWith)=>{return strValue.replace(valueToReplace, valueToReplaceWith)},
+        action: (strValue, curentActionObj,ignore = "true")=>{return strValue.replace(new RegExp(curentActionObj.valueToReplace.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(curentActionObj.replaceWith)=="string")?curentActionObj.replaceWith.replace(/\$/g,"$$$$"):curentActionObj.replaceWith)},
         code: "Replace"
       },
       ToUpper:  {
@@ -36,13 +37,16 @@ class App extends React.Component{
       }
     };
 
-    this.currentActionList = {};
     this.onInputTextChange = this.onInputTextChange.bind(this);
   }
 
   onInputTextChange(event){
     let stringToModify = event.target.value;
     let newString = stringToModify;
+    for(let key in this.state.currentActionList) {
+      let curentActionObj = this.state.currentActionList[key];
+      newString = this.availableActions[curentActionObj.code].action(newString, curentActionObj);
+    }
     this.setState({
         inputValue : stringToModify,
         outputValue : newString
@@ -50,10 +54,12 @@ class App extends React.Component{
   }
 
   addActionToCurrentActionList(actionObject){
-    let newCurrentActionList = Object.assign({}, this.currentActionList);
+    let newCurrentActionList = Object.assign({}, this.state.currentActionList);
     newCurrentActionList[actionObject.code] = actionObject;
-    this.currentActionList = newCurrentActionList;
-    this.setSectionToRender("Main");
+    this.setState({
+      sectionToRender: "Main",
+      currentActionList: newCurrentActionList
+    });
   }
 
   setSectionToRender(sectionName){
@@ -114,7 +120,7 @@ class App extends React.Component{
          
             <ListGroup 
               name="Current Action List" 
-              listItems={this.currentActionList} 
+              listItems={this.state.currentActionList} 
               onClick={(sectionName)=>console.log("Rocks")}
             />
         </div>
