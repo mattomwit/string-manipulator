@@ -277,17 +277,18 @@ class App extends React.Component{
         
         <div className="col-12 col-md-3 mb-3">
             <ListGroup 
+              name="Current Action List" 
+              additionalClasses="mb-3"
+              description="(Click to remove)"
+              listItems={this.state.currentActionList} 
+              onClick={(sectionObject)=>this.removeActionFromCurrentActionList(sectionObject)}
+            />
+
+            <ListGroup 
               additionalClasses="mb-3" 
               name="Saved Action Lists"
               onClick={(sectionObject)=>this.loadActionList(sectionObject)}
               listItems={this.state.savedActionLists}
-            />
-         
-            <ListGroup 
-              name="Current Action List" 
-              description="(Click to remove)"
-              listItems={this.state.currentActionList} 
-              onClick={(sectionObject)=>this.removeActionFromCurrentActionList(sectionObject)}
             />
         </div>
       </div>
