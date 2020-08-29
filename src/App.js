@@ -31,6 +31,18 @@ class App extends React.Component{
         action: (strValue, curentActionObj)=>{return strValue + curentActionObj.value},
         code: "Append"
       },
+      EncodeBase64: {
+          name: "Encode Base64",
+          component: <GenericAction name="Encode Base64" code="EncodeBase64" addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
+          action: (strValue)=>{return window.btoa(strValue)},
+          code: "EncodeBase64"
+      },
+      DecodeBase64: {
+          name: "Decode Base64",
+          component: <GenericAction name="Decode Base64" code="DecodeBase64" addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
+          action: (strValue)=>{return window.atob(strValue)},
+          code: "DecodeBase64"
+      },
       ToLower: {
           name: "To Lowercase",
           component: <GenericAction name="To Lowercase" code="ToLower" addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
@@ -43,18 +55,27 @@ class App extends React.Component{
         action: (strValue)=>{return strValue.toUpperCase()},
         code: "ToUpper"
       },
+      RemoveNewLine: {
+        name: "Remove New Line",
+        component: <GenericAction name="Remove New Line" code="RemoveNewLine" addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
+        action: (strValue)=>{return strValue.replace(/(\r\n|\n|\r)/gm, "")},
+        code: "RemoveNewLine"
+      },
+      RemoveSpaces: {
+        name: "Remove Spaces",
+        component: <GenericAction name="Remove Spaces" code="RemoveSpaces" addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
+        action: (strValue)=>{return strValue.replace(/ /g, "")},
+        code: "RemoveSpaces"
+      },
       Replace:{
         name: "Replace",
         component: <Replace addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
         action: (strValue, curentActionObj)=>{return strValue.replace(new RegExp(curentActionObj.valueToReplace.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(!curentActionObj.caseSensitive?"gi":"g")),(typeof(curentActionObj.replaceWith)=="string")?curentActionObj.replaceWith.replace(/\$/g,"$$$$"):curentActionObj.replaceWith)},
         code: "Replace"
       }
-      
     };
 
     this.onCurrentActiveActionListChanged = this.onCurrentActiveActionListChanged.bind(this);
-
-    
   }
 
   componentDidMount() {
@@ -86,6 +107,19 @@ class App extends React.Component{
     }
   }
 
+  removeItemFromSavedActionLists(){
+    if(this.state.currentActiveActionList.length > 0 && Object.keys(this.state.savedActionLists).length > 0){
+      if(this.state.savedActionLists[this.state.currentActiveActionList]){
+        let newSavedActionList = Object.assign({}, this.state.savedActionLists);
+        delete newSavedActionList[this.state.currentActiveActionList];
+        localStorage.setItem("stringManipulatorSavedActionLists",  JSON.stringify(newSavedActionList));
+        this.setState({ 
+          savedActionLists : newSavedActionList
+        });
+      }
+    }
+  }
+
   removeActionFromCurrentActionList(actionObject)
   {
     let newCurrentActionList = Object.assign({}, this.state.currentActionList)
@@ -109,6 +143,7 @@ class App extends React.Component{
   loadActionList(actionObject){
      
     this.setState({
+      sectionToRender: "Main",
       currentActionList : Object.assign({}, this.state.savedActionLists[actionObject.code].currentActionList),
       currentActiveActionList : actionObject.code
     },()=>this.updateOutputString(this.state.inputValue));
@@ -146,9 +181,32 @@ class App extends React.Component{
   renderReturnBtn(sectionToRender){
     if(sectionToRender !== undefined && sectionToRender !== "Main")
     return (
-    <button type="button" className="btn btn-info mr-2 mb-3" onClick={()=>this.setSectionToRender("Main")}>
+    <button type="button" className="btn btn-info mb-3 mr-2" onClick={()=>this.setSectionToRender("Main")}>
       Back
     </button>
+    );
+  }
+
+  renderListManagementSection(sectionToRender){
+    if(sectionToRender === undefined || sectionToRender === "Main")
+    return (
+      <div>
+        <div className="form-group">
+          <label htmlFor="current-action-list">Current action list</label>
+          <input
+              className="form-control" 
+              id="current-action-list"
+              value={this.state.currentActiveActionList}  
+              onChange={this.onCurrentActiveActionListChanged}
+          />  
+        </div>       
+        <button type="button" className="btn btn-info mb-3 mr-2" onClick={()=>this.saveCurrentActionList()}>
+          Save action list
+        </button>
+        <button type="button" className="btn btn-danger mb-3" onClick={()=>this.removeItemFromSavedActionLists()}>
+          Remove List
+        </button>
+      </div>
     );
   }
 
@@ -186,19 +244,7 @@ class App extends React.Component{
               </code>
             </pre>
           </details>
-          
-          <div className="form-group">
-            <label htmlFor="current-action-list">Current action list</label>
-            <input
-                className="form-control" 
-                id="current-action-list"
-                value={this.state.currentActiveActionList}  
-                onChange={this.onCurrentActiveActionListChanged}
-            />  
-          </div>
-          <button type="button" className="btn btn-info mb-3" onClick={()=>this.saveCurrentActionList()}>
-             Save action list
-          </button>
+          {this.renderListManagementSection(this.state.sectionToRender)}
         </div>
         
         <div className="col-12 col-md-3 mb-3">
