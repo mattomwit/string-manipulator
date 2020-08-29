@@ -196,6 +196,7 @@ class App extends React.Component{
          
             <ListGroup 
               name="Current Action List" 
+              description="(Click to remove)"
               listItems={this.state.currentActionList} 
               onClick={(sectionName)=>console.log("Rocks")}
             />

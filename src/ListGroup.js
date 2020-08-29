@@ -3,6 +3,7 @@ import ListGroupItem from './ListGroupItem';
 
 function ListGroup(props){
     let listItems = [];
+    let description;
     for(let key in props.listItems) {
         let item = props.listItems[key];
         let itemCode = item.code;
@@ -18,10 +19,17 @@ function ListGroup(props){
             }} 
         />);
     }
+    if(props.description){
+        description =  <div style={{'font-size': '.8rem'}} className="font-weight-light">{props.description}</div>;
+    }
+
     if(listItems.length > 0){
         return(
             <div className={"list-group " + props.additionalClasses}>
-                <div className="list-group-item list-group-item-primary">{props.name}</div>
+                <div className="list-group-item list-group-item-primary">
+                    <div>{props.name}</div>
+                    {description}
+                </div>
                 {listItems}
             </div>
         );
