@@ -102,7 +102,7 @@ class App extends React.Component{
     this.setState({
       currentActionList : Object.assign({}, this.state.savedActionLists[actionListName].currentActionList),
       currentActiveActionList : actionListName
-    });
+    },()=>this.updateOutputString(this.state.inputValue));
   }
 
   updateOutputString(inputValue){
@@ -169,8 +169,14 @@ class App extends React.Component{
         <div className="col-12 col-md-6 mb-3 border rounded bg-white">
           {renderComponent}
           {this.renderReturnBtn(this.state.sectionToRender)}
-          <p>state</p>
-          <p id="itemID">{JSON.stringify(this.state)}</p>
+          <details className="border rounded">
+            <summary>current state object</summary>
+            <pre>
+              <code>
+              {JSON.stringify(this.state,null, '\t')}
+              </code>
+            </pre>
+          </details>
           
           <div className="form-group">
             <label htmlFor="current-action-list">Current action list</label>
