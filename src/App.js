@@ -79,9 +79,7 @@ class App extends React.Component{
         name: this.state.currentActiveActionList,
         code: this.state.currentActiveActionList
       };
-      let strigify = JSON.stringify(newSavedActionList);
-      console.log("stringify", strigify);
-      localStorage.setItem("stringManipulatorSavedActionLists", strigify);
+      localStorage.setItem("stringManipulatorSavedActionLists",  JSON.stringify(newSavedActionList));
       this.setState({ 
         savedActionLists : newSavedActionList
       });
