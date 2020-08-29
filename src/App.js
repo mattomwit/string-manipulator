@@ -1,4 +1,5 @@
 import React from 'react';
+import * as clipboard from "clipboard-polyfill/text";
 import ListGroup from './ListGroup';
 import MainSection from './MainSection';
 import InputAction from './Actions/InputAction';
@@ -161,6 +162,18 @@ class App extends React.Component{
     });
   }
 
+  copyToClipboard(){
+    document.querySelector("#Outputtext").select()
+    clipboard.writeText(this.state.outputValue).then(
+      function () {
+        console.log("success!");
+      },
+      function () {
+        console.error("Failed to copy output value to clipboard.");
+      }
+    );
+  }
+
   addActionToCurrentActionList(actionObject){
     let numberOfActions = Object.keys(this.state.currentActionList).length;
     let newCurrentActionList = Object.assign({}, this.state.currentActionList);
@@ -203,8 +216,11 @@ class App extends React.Component{
         <button type="button" className="btn btn-info mb-3 mr-2" onClick={()=>this.saveCurrentActionList()}>
           Save action list
         </button>
-        <button type="button" className="btn btn-danger mb-3" onClick={()=>this.removeItemFromSavedActionLists()}>
+        <button type="button" className="btn btn-danger mb-3 mr-2" onClick={()=>this.removeItemFromSavedActionLists()}>
           Remove List
+        </button>
+        <button type="button" className="btn btn-info mb-3" onClick={()=>this.copyToClipboard()}>
+          Copy output to clipboard
         </button>
       </div>
     );
