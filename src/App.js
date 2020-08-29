@@ -5,7 +5,7 @@ import MainSection from './MainSection';
 import InputAction from './Actions/InputAction';
 import Replace from './Actions/Replace';
 import GenericAction from './Actions/GenericAction';
-
+import stringHelper from './Helpers/StringHelper'
 
 class App extends React.Component{
   constructor(props) {
@@ -59,13 +59,13 @@ class App extends React.Component{
       RemoveNewLine: {
         name: "Remove New Line",
         component: <GenericAction name="Remove New Line" code="RemoveNewLine" addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
-        action: (strValue)=>{return strValue.replace(/(\r\n|\n|\r)/gm, "")},
+        action: (strValue)=>{return stringHelper.removeNewLine(strValue)},
         code: "RemoveNewLine"
       },
       RemoveSpaces: {
         name: "Remove Spaces",
         component: <GenericAction name="Remove Spaces" code="RemoveSpaces" addToCurrentList={(actionObject)=>this.addActionToCurrentActionList(actionObject)}/>,
-        action: (strValue)=>{return strValue.replace(/ /g, "")},
+        action: (strValue)=>{return stringHelper.removeWhiteSpace(strValue)},
         code: "RemoveSpaces"
       },
       Replace:{
