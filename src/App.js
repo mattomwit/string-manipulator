@@ -88,20 +88,31 @@ class App extends React.Component{
     }
   }
 
+  removeActionFromCurrentActionList(actionObject)
+  {
+    let newCurrentActionList = Object.assign({}, this.state.currentActionList)
+    for(let key in this.state.currentActionList) {
+      if(this.state.currentActionList[key] === actionObject){
+        delete newCurrentActionList[key];
+      }
+    }
+    
+    this.setState({
+      currentActionList : newCurrentActionList
+    },()=>this.updateOutputString(this.state.inputValue));
+  }
+
   loadSavedActionLists(){
-    let loaded = localStorage.getItem("stringManipulatorSavedActionLists");
-    console.log("loaded", loaded);
-    console.log("parsed", JSON.parse(loaded));
     this.setState({ 
       savedActionLists : JSON.parse(localStorage.getItem("stringManipulatorSavedActionLists"))
     });
   }
 
-  loadActionList(actionListName){
+  loadActionList(actionObject){
      
     this.setState({
-      currentActionList : Object.assign({}, this.state.savedActionLists[actionListName].currentActionList),
-      currentActiveActionList : actionListName
+      currentActionList : Object.assign({}, this.state.savedActionLists[actionObject.code].currentActionList),
+      currentActiveActionList : actionObject.code
     },()=>this.updateOutputString(this.state.inputValue));
   }
 
@@ -128,9 +139,9 @@ class App extends React.Component{
     ()=>this.updateOutputString(this.state.inputValue));
   }
 
-  setSectionToRender(sectionName){
+  setSectionToRender(actionObject){
     this.setState({
-      sectionToRender: sectionName
+      sectionToRender: actionObject.code
     });
   }
 
@@ -162,7 +173,7 @@ class App extends React.Component{
           <ListGroup 
             name="Actions" 
             listItems={this.availableActions}
-            onClick={(sectionName)=>this.setSectionToRender(sectionName)}
+            onClick={(sectionObject)=>this.setSectionToRender(sectionObject)}
           />
         </div>
   
@@ -196,7 +207,7 @@ class App extends React.Component{
             <ListGroup 
               additionalClasses="mb-3" 
               name="Saved Action Lists"
-              onClick={(actionListName)=>this.loadActionList(actionListName)}
+              onClick={(sectionObject)=>this.loadActionList(sectionObject)}
               listItems={this.state.savedActionLists}
             />
          
@@ -204,7 +215,7 @@ class App extends React.Component{
               name="Current Action List" 
               description="(Click to remove)"
               listItems={this.state.currentActionList} 
-              onClick={(sectionName)=>console.log("Rocks")}
+              onClick={(sectionObject)=>this.removeActionFromCurrentActionList(sectionObject)}
             />
         </div>
       </div>
