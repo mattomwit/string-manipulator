@@ -93,6 +93,14 @@ class App extends React.Component{
     });
   }
 
+  newActionList(){
+    this.setState({
+      sectionToRender: "Main",
+      currentActionList : {},
+      currentActiveActionList : ""
+    },()=>this.updateOutputString(this.state.inputValue));
+  }
+
   saveCurrentActionList(){
     if(this.state.currentActiveActionList.length > 0 && Object.keys(this.state.currentActionList).length > 0){
       let newSavedActionList = Object.assign({}, this.state.savedActionLists);
@@ -142,7 +150,6 @@ class App extends React.Component{
   }
 
   loadActionList(actionObject){
-     
     this.setState({
       sectionToRender: "Main",
       currentActionList : Object.assign({}, this.state.savedActionLists[actionObject.code].currentActionList),
@@ -219,8 +226,11 @@ class App extends React.Component{
         <button type="button" className="btn btn-danger mb-3 mr-2" onClick={()=>this.removeItemFromSavedActionLists()}>
           Remove List
         </button>
-        <button type="button" className="btn btn-info mb-3" onClick={()=>this.copyToClipboard()}>
+        <button type="button" className="btn btn-info mb-3 mr-2" onClick={()=>this.copyToClipboard()}>
           Copy output to clipboard
+        </button>
+        <button type="button" className="btn btn-success mb-3" onClick={()=>this.newActionList()}>
+          New Action List
         </button>
       </div>
     );
@@ -249,18 +259,20 @@ class App extends React.Component{
           />
         </div>
   
-        <div className="col-12 col-md-6 mb-3 border rounded bg-white">
-          {renderComponent}
-          {this.renderReturnBtn(this.state.sectionToRender)}
-          <details className="border rounded">
-            <summary>current state object</summary>
-            <pre>
-              <code>
-              {JSON.stringify(this.state,null, '\t')}
-              </code>
-            </pre>
-          </details>
-          {this.renderListManagementSection(this.state.sectionToRender)}
+        <div className="col-12 col-md-6 mb-3 px-md-0">
+          <div className="border rounded bg-white p-3">
+            {renderComponent}
+            {this.renderReturnBtn(this.state.sectionToRender)}
+            <details className="border rounded">
+              <summary>current state object</summary>
+              <pre>
+                <code>
+                {JSON.stringify(this.state,null, '\t')}
+                </code>
+              </pre>
+            </details>
+            {this.renderListManagementSection(this.state.sectionToRender)}
+          </div>
         </div>
         
         <div className="col-12 col-md-3 mb-3">
