@@ -5,7 +5,7 @@ import MainSection from './MainSection';
 import InputAction from './Actions/InputAction';
 import Replace from './Actions/Replace';
 import GenericAction from './Actions/GenericAction';
-import stringHelper from './Helpers/StringHelper'
+import stringHelper from './Helpers/StringHelper';
 
 class App extends React.Component{
   constructor(props) {
@@ -263,6 +263,8 @@ class App extends React.Component{
           <div className="border rounded bg-white p-3">
             {renderComponent}
             {this.renderReturnBtn(this.state.sectionToRender)}
+            {this.renderListManagementSection(this.state.sectionToRender)}
+          </div>
             <details className="border rounded">
               <summary>current state object</summary>
               <pre>
@@ -271,8 +273,6 @@ class App extends React.Component{
                 </code>
               </pre>
             </details>
-            {this.renderListManagementSection(this.state.sectionToRender)}
-          </div>
         </div>
         
         <div className="col-12 col-md-3 mb-3">
